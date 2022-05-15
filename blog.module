@@ -1,0 +1,79 @@
+<?php
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityInterface;
+/**
+ * hook_schema()
+ */
+function blog_schema() {
+
+  $schema['blog_info'] = array(
+    'description' => 'Store Blog Info',
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique Nid',
+      ),
+      'created' => array(
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+        'description' => 'Blog Created',
+      ),
+      'updated' => array(
+        'type' => 'int',
+        'length' => 11,
+        'description' => 'Blog Updated.',
+      ),
+      'notification_status' => array(
+        'type' => 'int',
+        'length' => 4,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Notification Status',
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+
+  return $schema;
+}
+
+function blog_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  if ($bundle === 'blog' && $entity_type->id() == 'node') {
+    if (isset($fields['field_read_more'])) {
+      $fields['field_read_more']->addConstraint('external_domain', []);
+    }
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function blog_node_insert(EntityInterface $node) {
+  if($node->getType() == 'blog'){
+    $connection = \Drupal::service('database');
+    $result = $connection->insert('blog_info')
+      ->fields([
+        'nid' => $node->id(),
+        'created' => time(),
+      ])
+      ->execute();
+  }  
+}
+
+function blog_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'blog_notify':
+      // Set headers etc
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['message'];
+      $message['headers']['Return-Path'] = $message['from'];
+      $message['headers']['Sender'] = $message['from'];
+      $message['headers']['Reply-to'] = $message['from'];
+      $message['headers']['From'] = $message['from'];
+      break;
+  }
+}   

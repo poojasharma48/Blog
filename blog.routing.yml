@@ -1,0 +1,7 @@
+blog.add_blog_form:
+  path: '/add/blog'
+  defaults:
+    _form: '\Drupal\blog\Form\AddBlogForm'
+    _title: 'Add Blog Content'
+  requirements:
+    _permission: 'access content'

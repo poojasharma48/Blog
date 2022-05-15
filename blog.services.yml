@@ -1,0 +1,7 @@
+services:
+  blog.notification_command:
+    class: \Drupal\blog\Commands\NotificationCommand
+    tags:
+      - { name: drush.command }
+    arguments: ['@database', '@plugin.manager.mail']
+  
