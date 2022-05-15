@@ -1,20 +1,29 @@
-/**
- * Installation
-*/
+Here are the details of the assignment:
 
-* install module by following steps:
-   unzip the blog module and place in custom module
-   
-* Enable "Blog" module as usual.
+Create a new content type "Blog" via admin.
 
-* After installation , To add Blog content from custom form : https://your_domain_name/add/blog
+Fields for the content type are:
 
-* Before save data from blog custom form  need to add blog content type form admin with following fields:
-   - Add field with name "field_blog_img" and type image type field and set required from backend
+	Title (Required)
 
-   - Add field with name "field_read_more" and disable title field of link and enable external link validation and set required from backend
+	Body (Required)
 
-   - set the body field required 
+	Read more link:  (Required) Link to external domain
 
-* Drush command to send mail notification
-   drush d9-ns
+	Cover Image:  (Required) Max dimension is 200px by 350px and max upload size is 250 KB. No minimum dimension restriction will be there.
+
+Create a custom form to create a new blog node from the front-end with all backend validations.
+
+When a new blog is created (either from admin or via a custom form), add a record in a custom table.
+
+Table structure:
+
+	nid
+
+	created
+
+	updated
+
+    notification_status, ( default = 0 )
+
+Write a Drush command that picks up the first 5 entries with notification_status as 0 and sends an email to the author of the node. When email is sent, set notification_status = 1
